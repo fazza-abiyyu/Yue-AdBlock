@@ -2,52 +2,62 @@ import { Elysia, type Context } from 'elysia';
 import { adblockService } from './adblock.service';
 import { odataSingle } from '../../lib/odata/response';
 
-type PolicyQuery = { query: { profile?: string } };
-type RuleParams = { params: { ruleName: string } };
+function getQueryParam(ctx: Context, name: string): string | undefined {
+  const url = new URL(ctx.request.url);
+  return url.searchParams.get(name) ?? undefined;
+}
+
+function getPathParam(ctx: Context, name: string): string | undefined {
+  const url = new URL(ctx.request.url);
+  // Extract path segment for the param
+  const pathParts = url.pathname.split('/');
+  const routeMap: Record<string, number> = {};
+  // Simple heuristic: find the param by matching route pattern
+  // We know the patterns: /adblock/rules/:ruleName
+  if (pathParts.length >= 4 && pathParts[1] === 'adblock' && pathParts[2] === 'rules') {
+    routeMap['ruleName'] = 3; // 0-indexed: / adblock rules <value>
+  }
+  const idx = routeMap[name];
+  return idx !== undefined ? decodeURIComponent(pathParts[idx] ?? '') : undefined;
+}
 
 export class AdblockController {
   register(app: Elysia) {
-    app.group('/adblock', (adblock) => {
-      adblock.get('/metadata', (ctx: Context) => this.getMetadata(ctx));
-      adblock.get('/policy', (ctx: Context & PolicyQuery) => this.getPolicy(ctx));
-      adblock.get('/profiles', (ctx: Context) => this.listProfiles(ctx));
-      adblock.get('/rules/:ruleName', (ctx: Context & RuleParams) => this.getRule(ctx));
-      return adblock;
+    app.get('/adblock/metadata', (ctx) => {
+      const metadata = adblockService.getMetadata();
+      if (!metadata) {
+        ctx.set.status = 404;
+        return { error: 'Metadata not found' };
+      }
+      return odataSingle(metadata);
     });
-  }
 
-  private getMetadata(ctx: Context) {
-    const metadata = adblockService.getMetadata();
-    if (!metadata) {
-      ctx.set.status = 404;
-      return { error: 'Metadata not found' };
-    }
-    return odataSingle(metadata);
-  }
+    app.get('/adblock/policy', (ctx) => {
+      const profile = getQueryParam(ctx, 'profile') ?? 'balanced';
+      const policy = adblockService.getPolicy(profile);
+      if (!policy) {
+        ctx.set.status = 404;
+        return { error: `Policy profile '${profile}' not found` };
+      }
+      return odataSingle(policy);
+    });
 
-  private getPolicy(ctx: Context & PolicyQuery) {
-    const profile = ctx.query.profile ?? 'balanced';
-    const policy = adblockService.getPolicy(profile);
-    if (!policy) {
-      ctx.set.status = 404;
-      return { error: `Policy profile '${profile}' not found` };
-    }
-    return odataSingle(policy);
-  }
+    app.get('/adblock/profiles', (ctx) => {
+      const profiles = adblockService.listProfiles();
+      return odataSingle({ profiles });
+    });
 
-  private listProfiles(ctx: Context) {
-    const profiles = adblockService.listProfiles();
-    return odataSingle({ profiles });
-  }
-
-  private getRule(ctx: Context & RuleParams) {
-    const ruleContent = adblockService.getRuleContent(ctx.params.ruleName);
-    if (!ruleContent) {
-      ctx.set.status = 404;
-      return { error: `Rule file '${ctx.params.ruleName}' not found` };
-    }
-    ctx.set.headers = { 'Content-Type': 'text/plain; charset=utf-8' };
-    ctx.set.status = 200;
-    return ruleContent;
+    app.get('/adblock/rules/:ruleName', (ctx) => {
+      const params = (ctx as unknown as { params?: Record<string, string> }).params;
+      const ruleName = params?.ruleName ?? getPathParam(ctx, 'ruleName') ?? '';
+      const ruleContent = adblockService.getRuleContent(ruleName);
+      if (!ruleContent) {
+        ctx.set.status = 404;
+        return { error: `Rule file '${ruleName}' not found` };
+      }
+      ctx.set.headers = { 'Content-Type': 'text/plain; charset=utf-8' };
+      ctx.set.status = 200;
+      return ruleContent;
+    });
   }
 }

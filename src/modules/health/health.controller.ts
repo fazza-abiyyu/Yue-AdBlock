@@ -1,11 +1,16 @@
-import { Elysia, type Context } from 'elysia';
-import { healthService } from './health.service';
-import { odataSingle } from '../../lib/odata/response';
+import type { HandlerContext } from '../../lib/endpoint/index.js';
+import { HealthService } from './health.service.js';
 
 export class HealthController {
-  register(app: Elysia) {
-    app.get('/health', (ctx) => {
-      return odataSingle(healthService.getHealth());
-    });
+  constructor(private readonly healthService: HealthService) {}
+
+  live(ctx: HandlerContext) {
+    const correlationId = (ctx.headers['x-correlation-id'] as string) || undefined;
+    return this.healthService.live({ correlationId });
+  }
+
+  ready(ctx: HandlerContext) {
+    const correlationId = (ctx.headers['x-correlation-id'] as string) || undefined;
+    return this.healthService.ready({ correlationId });
   }
 }

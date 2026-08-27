@@ -1,44 +1,88 @@
-import { Elysia, type Context } from 'elysia';
+import type { z } from 'zod';
+import { ValidationError } from '../exception/index.js';
 
-export interface Endpoint {
-  prefix: string;
-  register(app: Elysia): void;
+export interface HandlerContext {
+  params: Record<string, string>;
+  query: Record<string, string | undefined>;
+  body: unknown;
+  headers: Record<string, string | undefined>;
+  set: { status?: number | string; headers?: Record<string, string> };
 }
 
-export abstract class BaseEndpoint implements Endpoint {
-  abstract prefix: string;
-  abstract register(app: Elysia): void;
+export type AnyController = Record<string, (ctx: HandlerContext) => unknown>;
 
-  protected success<T>(ctx: Context, data: T, message = 'OK') {
-    ctx.set.status = 200;
-    return {
-      status: 'success' as const,
-      code: 200,
-      message,
-      data,
-      timestamp: new Date().toISOString(),
+export interface EndpointSchema {
+  body?: z.ZodTypeAny;
+  query?: z.ZodTypeAny;
+  params?: z.ZodTypeAny;
+}
+
+export type PermissionHandler = (ctx: HandlerContext) => void;
+
+export interface RouteConfig {
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  path: string;
+  handler: string;
+  schema?: EndpointSchema;
+  auth?: boolean;
+  permissions?: PermissionHandler[];
+  tags?: string[];
+  responses?: { status: number; description?: string }[];
+}
+
+type ElysiaContext = {
+  params: Record<string, string>;
+  query: Record<string, string | undefined>;
+  body: unknown;
+  headers: Record<string, string | undefined>;
+  set: { status?: number | string; headers?: Record<string, string> };
+};
+
+function formatZodError(err: z.ZodError): string {
+  return err.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
+}
+
+export function mountRoutes(app: any, controller: object, configs: RouteConfig[]): any {
+  const handlers = controller as AnyController;
+
+  for (const route of configs) {
+    const { path, handler, schema, permissions } = route;
+
+    const wrappedHandler = (context: ElysiaContext) => {
+      let body = context.body;
+      let query = context.query;
+      let params = context.params;
+
+      if (schema) {
+        if (schema.body) {
+          const parsed = schema.body.safeParse(body);
+          if (!parsed.success) throw new ValidationError(formatZodError(parsed.error));
+          body = parsed.data;
+        }
+        if (schema.query) {
+          const parsed = schema.query.safeParse(query);
+          if (!parsed.success) throw new ValidationError(formatZodError(parsed.error));
+          query = parsed.data as Record<string, string | undefined>;
+        }
+        if (schema.params) {
+          const parsed = schema.params.safeParse(params);
+          if (!parsed.success) throw new ValidationError(formatZodError(parsed.error));
+          params = parsed.data as Record<string, string>;
+        }
+      }
+
+      for (const permission of permissions ?? []) {
+        permission({ params, query, body, headers: context.headers, set: context.set });
+      }
+
+      const fn = handlers[handler];
+      if (typeof fn !== 'function') throw new ValidationError(`Handler '${handler}' is not implemented`);
+
+      return fn.call(controller, { params, query, body, headers: context.headers, set: context.set });
     };
+
+    app.route(route.method, path, wrappedHandler as never);
   }
 
-  protected created<T>(ctx: Context, data: T, message = 'Created') {
-    ctx.set.status = 201;
-    return {
-      status: 'success' as const,
-      code: 201,
-      message,
-      data,
-      timestamp: new Date().toISOString(),
-    };
-  }
-
-  protected error(ctx: Context, status: number, code: string, message: string, details?: unknown) {
-    ctx.set.status = status;
-    return {
-      status: 'error' as const,
-      code,
-      message,
-      details,
-      timestamp: new Date().toISOString(),
-    };
-  }
+  return app;
 }

@@ -1,71 +1,55 @@
-export interface AdblockPolicy {
-  policyVersion: number;
-  engineVersion: number;
+export interface PolicyResponse {
   profile: string;
-  network: {
-    mode: string;
-    thirdParty: {
-      blockTrackers: boolean;
-      blockAds: boolean;
-      blockMalvertising: boolean;
-    };
-    firstParty: { enabled: boolean };
-    unknown: { action: string };
+  name: string;
+  description: string;
+  version: string;
+  updatedAt: string;
+  engine: {
+    version: string;
+    minVersion: string;
+    features: string[];
   };
-  navigation: {
-    popup: { policy: string };
-    redirect: {
-      maxChain: number;
-      thirdParty: string;
-      sameSite: string;
-      userGestureRequired: boolean;
-      allowOAuth: boolean;
-    };
+  rules: {
+    required: string[];
+    optional: string[];
+  };
+  blocking: {
+    level: 'allowlist' | 'standard' | 'aggressive';
+    blockThirdParty: boolean;
+    blockTracking: boolean;
+    blockCookies: boolean;
   };
   cosmetic: {
     enabled: boolean;
-    strategy: string;
-    generic: { maxRules: number };
-    iframe: { enabled: boolean };
+    video: boolean;
+    siteSpecific: boolean;
   };
-  cookieBanner: { enabled: boolean; maxRules: number };
-  webSocket: { blockTracking: boolean; blockAnalytics: boolean };
-  scriptlet: { enabled: boolean };
-  youtube: { enabled: boolean; strategy: string; skipHosts: string[] };
-  antiAdblock: { enabled: boolean };
+  redirect: {
+    skip: boolean;
+    timeout: number;
+  };
+  webSocket: {
+    blockTracking: boolean;
+  };
+  cookieBanner: {
+    enabled: boolean;
+  };
+  scriptlet: {
+    enabled: boolean;
+  };
+  antiAdblock: {
+    enabled: boolean;
+    bypass: boolean;
+  };
   riskScoring: {
-    blockThreshold: number;
-    warnThreshold: number;
-    signalScores: Record<string, number>;
+    enabled: boolean;
+    threshold: number;
   };
 }
 
-export interface RuleMetadata {
-  adDomains: RuleFileInfo;
-  abpindo: RuleFileInfo;
-  easylist: RuleFileInfo;
-  cosmeticSelectors: RuleFileInfo;
-  dangerousElements: RuleFileInfo;
-  gamblingModerate: RuleFileInfo;
-  gamblingStrict: RuleFileInfo;
-}
-
-export interface RuleFileInfo {
-  version: number;
-  hash: string;
-}
-
-export interface StrategyMetadata {
-  latestPolicyVersion: number;
-  minEngineVersion: number;
-  lastUpdated: string;
-  rules: RuleMetadata;
-  availableProfiles: string[];
-}
-
-export interface SyncResult {
-  success: boolean;
-  policyVersion?: number;
-  rulesDownloaded?: boolean;
-  message?: string;
+export interface ProfileInfo {
+  id: string;
+  name: string;
+  description: string;
+  isDefault: boolean;
 }

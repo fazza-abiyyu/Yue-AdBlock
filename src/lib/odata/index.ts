@@ -1,4 +1,3 @@
-export * from './response';
-export * from './query';
-export * from './pagination';
-export * from './types';
+export * from './types.js';
+export * from './response.js';
+export * from './i18n.js';

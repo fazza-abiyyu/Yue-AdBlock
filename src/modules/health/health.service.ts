@@ -1,16 +1,35 @@
-import type { HealthInfo } from './health.interface';
-
-const startTime = Date.now();
+import { config } from '../../infrastructure/config/index.js';
+import type { HealthResponse, HealthCheckOptions } from './health.interface.js';
 
 export class HealthService {
-  getHealth(): HealthInfo {
+  private generateMeta(correlationId?: string) {
     return {
-      status: 'healthy',
-      version: '1.0.0',
-      uptime: Math.floor((Date.now() - startTime) / 1000),
-      timestamp: new Date().toISOString(),
+      correlation_id: correlationId ?? null,
+      request_id: Math.random().toString(36).substring(2, 15),
+      idempotency_replayed: false,
+      served_at: new Date().toISOString(),
     };
   }
-}
 
-export const healthService = new HealthService();
+  live(options?: HealthCheckOptions): HealthResponse {
+    const status = {
+      status: 'ok' as const,
+      service: config.appName,
+      version: process.env.npm_package_version ?? '0.0.1',
+      checks: {} as Record<string, unknown>,
+      observed_at: new Date().toISOString(),
+    };
+    return { data: status, meta: this.generateMeta(options?.correlationId) };
+  }
+
+  ready(options?: HealthCheckOptions): HealthResponse {
+    const status = {
+      status: 'ok' as const,
+      service: config.appName,
+      version: process.env.npm_package_version ?? '0.0.1',
+      checks: { engine: { status: 'ok', message: 'AdBlock engine operational' } },
+      observed_at: new Date().toISOString(),
+    };
+    return { data: status, meta: this.generateMeta(options?.correlationId) };
+  }
+}

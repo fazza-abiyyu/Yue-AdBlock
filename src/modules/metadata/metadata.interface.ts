@@ -1,12 +1,19 @@
-export interface MetadataInfo {
-  service: string;
-  version: string;
-  description: string;
-  endpoints: EndpointInfo[];
+export interface RuleHash {
+  name: string;
+  hash: string;
+  size: number;
 }
 
-export interface EndpointInfo {
-  method: string;
-  path: string;
-  description: string;
+export interface MetadataResponse {
+  version: string;
+  engineVersion: string;
+  updatedAt: string;
+  profiles: string[];
+  rules: RuleHash[];
+  features: {
+    cookieBanner: boolean;
+    webRtc: boolean;
+    scriptlet: boolean;
+    redirect: boolean;
+  };
 }

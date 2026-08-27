@@ -1,16 +1,33 @@
 import { Elysia } from 'elysia';
-import { AdblockController } from './modules/adblock/adblock.controller';
-import { HealthController } from './modules/health/health.controller';
-import { MetadataController } from './modules/metadata/metadata.controller';
+import { errorHandler } from './lib/exception/handler.js';
+import { withCors } from './lib/http/cors.js';
+import { ODataResponse } from './lib/odata/index.js';
+import { moduleBuilders } from './modules/registry.js';
 
 export function createApp() {
-  const app = new Elysia({ prefix: '/api' }) as unknown as Elysia;
+  const app = new Elysia()
+    .onRequest(({ store }) => {
+      (store as Record<string, unknown>).__start = Date.now();
+    })
+    .onAfterResponse(({ store, request, set }) => {
+      const start = Number((store as Record<string, unknown>).__start ?? Date.now());
+      const duration = Date.now() - start;
+      console.log(`${request.method} ${request.url} ${set.status} ${duration}ms`);
+    })
+    .onError(errorHandler);
 
-  new HealthController().register(app);
-  new MetadataController().register(app);
-  new AdblockController().register(app);
+  withCors(app);
+
+  for (const builder of moduleBuilders) {
+    builder(app);
+  }
+
+  app.all('*', ({ set }) => {
+    set.status = 404;
+    return ODataResponse.error('NOT_FOUND', 'Route not found').build();
+  });
 
   return app;
 }
 
-export const app = createApp();
+export default createApp();

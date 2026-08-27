@@ -1,56 +1,18 @@
-import type { Context } from 'elysia';
+import { ODataError } from './index.js';
+import { ODataResponse, odataI18n } from '../odata/index.js';
 
-export class AppError extends Error {
-  constructor(
-    public readonly statusCode: number,
-    public readonly code: string,
-    message: string,
-    public readonly details?: unknown,
-  ) {
-    super(message);
-    this.name = 'AppError';
-  }
-}
+export function errorHandler(context: { error: unknown; set: { status?: number | string } }) {
+  const { error, set } = context;
 
-export function handleError(ctx: Context, error: unknown) {
-  if (error instanceof AppError) {
-    ctx.set.status = error.statusCode;
-    return {
-      status: 'error',
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      timestamp: new Date().toISOString(),
-    };
+  if (error instanceof ODataError) {
+    set.status = error.status;
+    return ODataResponse.error(error.code, error.message)
+      .translate(odataI18n.getTranslator(), error.lang)
+      .build();
   }
 
-  if (error instanceof Error) {
-    ctx.set.status = 500;
-    return {
-      status: 'error',
-      code: 'INTERNAL_ERROR',
-      message: error.message,
-      timestamp: new Date().toISOString(),
-    };
-  }
-
-  ctx.set.status = 500;
-  return {
-    status: 'error',
-    code: 'UNKNOWN_ERROR',
-    message: 'An unexpected error occurred',
-    timestamp: new Date().toISOString(),
-  };
-}
-
-export function notFoundError(resource: string, id?: string) {
-  return new AppError(404, 'NOT_FOUND', `${resource} not found${id ? `: ${id}` : ''}`);
-}
-
-export function validationError(message: string, details?: unknown) {
-  return new AppError(400, 'VALIDATION_ERROR', message, details);
-}
-
-export function unauthorizedError(message = 'Unauthorized') {
-  return new AppError(401, 'UNAUTHORIZED', message);
+  console.error('Unhandled Server Error:', error);
+  set.status = 500;
+  const message = error instanceof Error ? error.message : 'Internal Server Error';
+  return ODataResponse.error('INTERNAL_ERROR', message).build();
 }

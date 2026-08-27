@@ -1,3 +1,4 @@
-export * from './metadata.interface';
-export * from './metadata.service';
-export * from './metadata.controller';
+export * from './metadata.interface.js';
+export * from './metadata.service.js';
+export * from './metadata.controller.js';
+export * from './metadata.module.js';

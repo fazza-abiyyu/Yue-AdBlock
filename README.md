@@ -1,12 +1,12 @@
 # Yue AdBlock
 
-Remote adblock policy & filter rule server for Yue Browser. Built with Bun + Elysia following the CP Center pattern.
+Remote adblock policy & filter rule server for Yue Browser.
 
 ## Structure
 
 ```
 src/
-├── app.ts              # Elysia app factory (match cp-center pattern)
+├── app.ts              # Elysia app factory 
 ├── index.ts            # Entry point — exports createApp() default
 ├── lib/
 │   ├── endpoint/       # Route mounting, schema validation

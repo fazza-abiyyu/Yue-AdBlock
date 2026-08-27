@@ -3,5 +3,8 @@
   "bunVersion": "1.3",
   "installCommand": "bun install",
   "buildCommand": "bun run typecheck",
-  "devCommand": "bun run dev"
+  "devCommand": "bun run dev",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index" }
+  ]
 }

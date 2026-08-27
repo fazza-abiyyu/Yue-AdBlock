@@ -1,3 +1,4 @@
 import { app } from '../src/app';
 
-export default app;
+const fetchFn = app.fetch.bind(app);
+export default fetchFn;

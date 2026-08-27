@@ -1,0 +1,11 @@
+{
+  "buildCommand": "bun install",
+  "devCommand": "bun run dev",
+  "installCommand": "bun install",
+  "framework": null,
+  "functions": {
+    "api/index.ts": {
+      "runtime": "bun"
+    }
+  }
+}

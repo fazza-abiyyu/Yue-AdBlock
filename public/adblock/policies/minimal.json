@@ -1,0 +1,50 @@
+{
+  "policyVersion": 1,
+  "engineVersion": 1,
+  "profile": "minimal",
+  "network": {
+    "mode": "BASIC",
+    "thirdParty": {
+      "blockTrackers": true,
+      "blockAds": false,
+      "blockMalvertising": false
+    },
+    "firstParty": { "enabled": false },
+    "unknown": { "action": "ALLOW" }
+  },
+  "navigation": {
+    "popup": { "policy": "PERMISSIVE" },
+    "redirect": {
+      "maxChain": 5,
+      "thirdParty": "WARN",
+      "sameSite": "ALLOW",
+      "userGestureRequired": true,
+      "allowOAuth": true
+    }
+  },
+  "cosmetic": {
+    "enabled": true,
+    "strategy": "domain_aware",
+    "generic": { "maxRules": 100 },
+    "iframe": { "enabled": false }
+  },
+  "scriptlet": { "enabled": false },
+  "youtube": {
+    "enabled": false,
+    "strategy": "basic",
+    "skipHosts": ["music.youtube.com"]
+  },
+  "antiAdblock": { "enabled": false },
+  "riskScoring": {
+    "blockThreshold": 100,
+    "warnThreshold": 80,
+    "signalScores": {
+      "BLOCKED_AD_DOMAIN": 100,
+      "SUSPICIOUS_REDIRECT": 40,
+      "JUDOL_KEYWORD": 30,
+      "SUSPICIOUS_POPUP": 20,
+      "TRACKER_FOUND": 30,
+      "MALVERTISING_DOMAIN": 80
+    }
+  }
+}

@@ -8,10 +8,10 @@ type RuleParams = { params: { ruleName: string } };
 export class AdblockController {
   register(app: Elysia) {
     app.group('/adblock', (adblock) => {
-      adblock.get('/metadata', this.getMetadata.bind(this));
-      adblock.get('/policy', this.getPolicy.bind(this));
-      adblock.get('/profiles', this.listProfiles.bind(this));
-      adblock.get('/rules/:ruleName', this.getRule.bind(this));
+      adblock.get('/metadata', (ctx: Context) => this.getMetadata(ctx));
+      adblock.get('/policy', (ctx: Context & PolicyQuery) => this.getPolicy(ctx));
+      adblock.get('/profiles', (ctx: Context) => this.listProfiles(ctx));
+      adblock.get('/rules/:ruleName', (ctx: Context & RuleParams) => this.getRule(ctx));
       return adblock;
     });
   }

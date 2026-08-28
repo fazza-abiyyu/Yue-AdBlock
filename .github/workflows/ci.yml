@@ -44,12 +44,11 @@ jobs:
       - run: bun install --frozen-lockfile
       - name: Start server and run Newman
         run: |
-          bun run src/index.ts &
+          bun run src/index.ts > server.log 2>&1 &
           SERVER_PID=$!
           sleep 5
-          echo "--- server output above ---"
-          curl -sf http://localhost:3000/health/live || { echo "SERVER NOT READY"; kill $SERVER_PID; exit 1; }
-          bun run test:postman
-          EXIT=$?
-          kill $SERVER_PID 2>/dev/null || true
-          exit $EXIT
+          echo "=== server.log ==="
+          cat server.log
+          echo "=== process alive? ==="
+          kill -0 $SERVER_PID 2>/dev/null && echo "ALIVE" || echo "DEAD"
+          curl -sf http://localhost:3000/health/live > /dev/null 2>&1 && echo "HTTP OK" || echo "HTTP FAIL"

@@ -33,7 +33,12 @@ export class AdblockService {
             isDefault: f.replace('.json', '') === 'balanced',
           };
         } catch {
-          return { id: f.replace('.json', ''), name: f.replace('.json', ''), description: '', isDefault: false };
+          return {
+            id: f.replace('.json', ''),
+            name: f.replace('.json', ''),
+            description: '',
+            isDefault: false,
+          };
         }
       });
     } catch {

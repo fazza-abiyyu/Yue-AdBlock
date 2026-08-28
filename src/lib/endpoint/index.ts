@@ -76,12 +76,19 @@ export function mountRoutes(app: any, controller: object, configs: RouteConfig[]
       }
 
       const fn = handlers[handler];
-      if (typeof fn !== 'function') throw new ValidationError(`Handler '${handler}' is not implemented`);
+      if (typeof fn !== 'function')
+        throw new ValidationError(`Handler '${handler}' is not implemented`);
 
-      return fn.call(controller, { params, query, body, headers: context.headers, set: context.set });
+      return fn.call(controller, {
+        params,
+        query,
+        body,
+        headers: context.headers,
+        set: context.set,
+      });
     };
 
-    app.route(route.method, path, wrappedHandler as never);
+    app.route(route.method, path, wrappedHandler);
   }
 
   return app;

@@ -22,7 +22,8 @@ export function withCors(app: any): any {
 
       if (request.method === 'OPTIONS') {
         set.headers['access-control-allow-methods'] = ALLOWED_METHODS;
-        set.headers['access-control-allow-headers'] = request.headers.get('access-control-request-headers') ?? ALLOWED_HEADERS;
+        set.headers['access-control-allow-headers'] =
+          request.headers.get('access-control-request-headers') ?? ALLOWED_HEADERS;
         set.headers['access-control-max-age'] = '86400';
         set.status = 204;
         return new Response(null, { status: 204, headers: set.headers as HeadersInit });

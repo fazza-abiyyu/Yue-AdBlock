@@ -7,10 +7,10 @@ export class AdblockController {
   constructor(private readonly adblockService: AdblockService) {}
 
   getPolicy(ctx: HandlerContext) {
-    const url = new URL(ctx.headers['url'] ? (ctx.headers['url'] as string) : `http://localhost${this.getPath(ctx)}`);
-    const profile = url.searchParams.get('profile') ?? 'balanced';
+    const profile = (ctx.query?.profile as string) ?? 'balanced';
     const policy = this.adblockService.getPolicy(profile);
-    if (!policy) throw new ODataError('POLICY_NOT_FOUND', `Policy profile '${profile}' not found`, 404);
+    if (!policy)
+      throw new ODataError('POLICY_NOT_FOUND', `Policy profile '${profile}' not found`, 404);
     ctx.set.status = 200;
     return ODataResponse.item(policy).context('$metadata#EntitySet').build();
   }

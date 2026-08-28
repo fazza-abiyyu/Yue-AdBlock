@@ -8,8 +8,14 @@
     "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts",
     "typecheck": "bunx tsc --noEmit",
+    "test": "bun test",
+    "test:cov": "bun test --coverage",
+    "test:e2e": "bun test ./test/*.e2e-spec.ts",
     "lint": "eslint \"{src,test}/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test:postman": "cd postman && NODE_OPTIONS='--no-deprecation' newman run yue-adblock.postman_collection.json --delay-request 50",
+    "openapi:gen": "bun run scripts/generate-openapi.ts",
+    "postman:gen": "bun run scripts/generate-postman.ts"
   },
   "dependencies": {
     "elysia": "^1.4.29",
@@ -22,6 +28,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "globals": "^17.9.0",
+    "newman": "^6.2.2",
     "prettier": "^3.9.6",
     "typescript-eslint": "^8.66.0"
   }

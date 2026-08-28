@@ -40,4 +40,8 @@ export interface ODataErrorResponse {
   error: ODataError;
 }
 
-export type TranslateFn = (code: string, lang: string | undefined, params: { target?: string; defaultMessage: string }) => string;
+export type TranslateFn = (
+  code: string,
+  lang: string | undefined,
+  params: { target?: string; defaultMessage: string },
+) => string;

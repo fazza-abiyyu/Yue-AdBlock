@@ -1,0 +1,226 @@
+{
+  "info": {
+    "name": "yue-adblock",
+    "description": "Auto-generated from endpoint configs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "health",
+      "item": [
+        {
+          "name": "GET /health/live",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.response.to.have.status(200)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/live",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health",
+                "live"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /health/ready",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.response.to.have.status(200)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/ready",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health",
+                "ready"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "adblock",
+      "item": [
+        {
+          "name": "GET /adblock/policy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.response.to.have.status(200)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adblock/policy",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "adblock",
+                "policy"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /adblock/profiles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.response.to.have.status(200)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adblock/profiles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "adblock",
+                "profiles"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /adblock/rules/ad_domains.txt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.response.to.have.status(200);",
+                  "pm.expect(pm.response.headers.get(\"content-type\")).to.include(\"text/plain\");",
+                  "pm.expect(pm.response.text()).to.have.length.above(0)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adblock/rules/ad_domains.txt",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "adblock",
+                "rules",
+                "ad_domains.txt"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /adblock/rules/nonexistent.txt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.response.to.have.status(404)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adblock/rules/nonexistent.txt",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "adblock",
+                "rules",
+                "nonexistent.txt"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /adblock/metadata",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.response.to.have.status(200)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adblock/metadata",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "adblock",
+                "metadata"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}

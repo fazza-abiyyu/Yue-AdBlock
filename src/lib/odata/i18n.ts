@@ -11,7 +11,11 @@ class ODataI18n {
   }
 
   getTranslator(): TranslateFn {
-    return (code: string, lang: string | undefined, params: { target?: string; defaultMessage: string }) => {
+    return (
+      code: string,
+      lang: string | undefined,
+      params: { target?: string; defaultMessage: string },
+    ) => {
       if (lang && this.translations[lang] && this.translations[lang][code]) {
         return this.translations[lang][code];
       }

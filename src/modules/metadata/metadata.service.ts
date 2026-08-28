@@ -26,7 +26,9 @@ export class MetadataService {
             return { name, hash: Math.abs(hash).toString(16), size: content.length };
           });
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
 
       return {
         version: parsed.version ?? '1.0.0',

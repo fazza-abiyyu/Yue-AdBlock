@@ -1,5 +1,5 @@
-import { readFileSync, existsSync } from 'fs';
-import { resolve, join } from 'path';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import { z } from 'zod';
 
 let packageName = 'yue-adblock';
@@ -27,6 +27,8 @@ export const config = {
   appName: parsed.APP_NAME,
   port: parsed.PORT,
   nodeEnv: parsed.NODE_ENV,
-  corsOrigins: parsed.CORS_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean),
+  corsOrigins: parsed.CORS_ORIGINS.split(',')
+    .map((o) => o.trim())
+    .filter(Boolean),
   publicDir,
 };

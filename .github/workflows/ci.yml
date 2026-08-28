@@ -42,13 +42,14 @@ jobs:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
-      - name: Start server and run Newman
+      - name: Start server
+        run: bun run start &
+      - name: Wait for server
         run: |
-          bun run src/index.ts > server.log 2>&1 &
-          SERVER_PID=$!
           sleep 5
-          echo "=== server.log ==="
-          cat server.log
-          echo "=== process alive? ==="
-          kill -0 $SERVER_PID 2>/dev/null && echo "ALIVE" || echo "DEAD"
-          curl -sf http://localhost:3000/health/live > /dev/null 2>&1 && echo "HTTP OK" || echo "HTTP FAIL"
+          curl -sf http://localhost:3000/health/live > /dev/null || exit 1
+      - name: Run Newman
+        run: bun run test:postman
+      - name: Cleanup
+        if: always()
+        run: pkill -f "bun run" || true

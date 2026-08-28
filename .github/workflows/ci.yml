@@ -18,6 +18,7 @@ jobs:
 
   test:
     name: Unit Tests
+    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -27,6 +28,7 @@ jobs:
 
   e2e:
     name: E2E Tests
+    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -36,7 +38,7 @@ jobs:
 
   integration:
     name: Newman Integration
-    needs: [lint, test, e2e]
+    needs: [test, e2e]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

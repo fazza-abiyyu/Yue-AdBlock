@@ -15,7 +15,8 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "test:postman": "cd postman && NODE_OPTIONS='--no-deprecation' newman run yue-adblock.postman_collection.json --delay-request 50",
     "openapi:gen": "bun run scripts/generate-openapi.ts",
-    "postman:gen": "bun run scripts/generate-postman.ts"
+    "postman:gen": "bun run scripts/generate-postman.ts",
+    "gen:module": "bun run scripts/generate-module.ts"
   },
   "dependencies": {
     "elysia": "^1.4.29",

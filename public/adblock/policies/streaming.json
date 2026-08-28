@@ -1,0 +1,77 @@
+{
+  "policyVersion": 1,
+  "engineVersion": 1,
+  "profile": "streaming",
+  "name": "Streaming",
+  "description": "Optimized for video streaming sites — blocks video ads and popups while preserving video player functionality",
+  "network": {
+    "mode": "BALANCED",
+    "thirdParty": {
+      "blockTrackers": true,
+      "blockAds": true,
+      "blockMalvertising": true
+    },
+    "firstParty": {
+      "enabled": false,
+      "action": "ALLOW"
+    },
+    "unknown": {
+      "action": "ALLOW"
+    }
+  },
+  "navigation": {
+    "popup": {
+      "policy": "SMART",
+      "blockRedirects": true
+    },
+    "redirect": {
+      "maxChain": 3,
+      "thirdParty": "BLOCK",
+      "sameSite": "ALLOW",
+      "userGestureRequired": true,
+      "allowOAuth": true
+    }
+  },
+  "cosmetic": {
+    "enabled": true,
+    "strategy": "domain_aware",
+    "generic": {
+      "maxRules": 500
+    },
+    "iframe": {
+      "enabled": true
+    },
+    "video": {
+      "enabled": true,
+      "blockVideoAds": true,
+      "blockPreRoll": true,
+      "blockMidRoll": true,
+      "blockPostRoll": true,
+      "blockOverlayAds": true
+    }
+  },
+  "scriptlet": {
+    "enabled": true
+  },
+  "youtube": {
+    "enabled": true,
+    "strategy": "adaptive",
+    "skipHosts": ["music.youtube.com"]
+  },
+  "antiAdblock": {
+    "enabled": true,
+    "bypass": true
+  },
+  "riskScoring": {
+    "blockThreshold": 80,
+    "warnThreshold": 50,
+    "signalScores": {
+      "BLOCKED_AD_DOMAIN": 100,
+      "SUSPICIOUS_REDIRECT": 40,
+      "JUDOL_KEYWORD": 30,
+      "SUSPICIOUS_POPUP": 20,
+      "TRACKER_FOUND": 30,
+      "MALVERTISING_DOMAIN": 80
+    }
+  }
+}

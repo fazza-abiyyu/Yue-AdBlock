@@ -19,6 +19,13 @@ describe('AdblockService', () => {
       expect(policy!.riskScoring.blockThreshold).toBe(60);
     });
 
+    test('returns streaming policy', () => {
+      const policy = service.getPolicy('streaming') as any;
+      expect(policy).not.toBeNull();
+      expect(policy!.profile).toBe('streaming');
+      expect(policy!.riskScoring.blockThreshold).toBe(80);
+    });
+
     test('returns null for nonexistent profile', () => {
       const policy = service.getPolicy('nonexistent');
       expect(policy).toBeNull();
@@ -45,6 +52,12 @@ describe('AdblockService', () => {
       expect(aggressive).toBeDefined();
     });
 
+    test('includes streaming profile', () => {
+      const profiles = service.listProfiles();
+      const streaming = profiles.find((p) => p.id === 'streaming');
+      expect(streaming).toBeDefined();
+    });
+
     test('each profile has required fields', () => {
       const profiles = service.listProfiles();
       for (const profile of profiles) {
@@ -62,6 +75,24 @@ describe('AdblockService', () => {
       expect(content).not.toBeNull();
       expect(typeof content).toBe('string');
       expect(content!.length).toBeGreaterThan(0);
+    });
+
+    test('returns video_ads.txt rule file', () => {
+      const content = service.getRuleContent('video_ads.txt');
+      expect(content).not.toBeNull();
+      expect(content).toContain('.video-ads');
+    });
+
+    test('returns anti_adblock_selectors.txt rule file', () => {
+      const content = service.getRuleContent('anti_adblock_selectors.txt');
+      expect(content).not.toBeNull();
+      expect(content).toContain('.adblock-warning');
+    });
+
+    test('returns popup_ads.txt rule file', () => {
+      const content = service.getRuleContent('popup_ads.txt');
+      expect(content).not.toBeNull();
+      expect(content).toContain('.popup-ad');
     });
 
     test('returns null for nonexistent rule', () => {

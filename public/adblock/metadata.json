@@ -1,15 +1,26 @@
 {
   "latestPolicyVersion": 1,
   "minEngineVersion": 1,
-  "lastUpdated": "2026-08-27T12:00:00Z",
+  "lastUpdated": "2026-08-29T06:30:00Z",
+  "version": "1.0.0",
+  "engineVersion": "1.0.0",
+  "profiles": ["minimal", "balanced", "aggressive", "anti-judol", "streaming"],
   "rules": {
-    "adDomains": { "version": 1, "hash": "e823e8117c28c921" },
+    "adDomains": { "version": 2, "hash": "e823e8117c28c921" },
     "abpindo": { "version": 1, "hash": "fa76a7681ff5573a" },
     "easylist": { "version": 1, "hash": "8659b2c83c0e2583" },
-    "cosmeticSelectors": { "version": 1, "hash": "7ba6adc5c34ed03a" },
-    "dangerousElements": { "version": 1, "hash": "70f39fa60165a399" },
+    "cosmeticSelectors": { "version": 2, "hash": "7ba6adc5c34ed03a" },
+    "dangerousElements": { "version": 2, "hash": "70f39fa60165a399" },
     "gamblingModerate": { "version": 1, "hash": "6466328e1b1fc789" },
-    "gamblingStrict": { "version": 1, "hash": "813ac1160f9f4c91" }
+    "gamblingStrict": { "version": 1, "hash": "813ac1160f9f4c91" },
+    "videoAds": { "version": 1, "hash": "0000000000000000" },
+    "antiAdblockSelectors": { "version": 1, "hash": "0000000000000000" },
+    "popupAds": { "version": 1, "hash": "0000000000000000" }
   },
-  "availableProfiles": ["minimal", "balanced", "aggressive", "anti-judol"]
+  "features": {
+    "cookieBanner": true,
+    "webRtc": true,
+    "scriptlet": true,
+    "redirect": true
+  }
 }

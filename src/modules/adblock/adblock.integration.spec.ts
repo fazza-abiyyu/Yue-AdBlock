@@ -27,6 +27,7 @@ describe('AdBlock Endpoints (Integration)', () => {
     expect(body).toHaveProperty('item');
     expect(body.item).toHaveProperty('profiles');
     expect(body.item.profiles).toContain('balanced');
+    expect(body.item.profiles).toContain('streaming');
   });
 
   test('GET /adblock/policy?profile=balanced returns balanced policy', async () => {
@@ -45,6 +46,14 @@ describe('AdBlock Endpoints (Integration)', () => {
     expect(body.value.riskScoring.blockThreshold).toBe(60);
   });
 
+  test('GET /adblock/policy?profile=streaming returns streaming policy', async () => {
+    const res = await app.handle(new Request('http://localhost/adblock/policy?profile=streaming'));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.value.profile).toBe('streaming');
+    expect(body.value.riskScoring.blockThreshold).toBe(80);
+  });
+
   test('GET /adblock/policy with invalid profile returns 404', async () => {
     const res = await app.handle(
       new Request('http://localhost/adblock/policy?profile=nonexistent'),
@@ -59,6 +68,8 @@ describe('AdBlock Endpoints (Integration)', () => {
     expect(body).toHaveProperty('value');
     expect(Array.isArray(body.value)).toBe(true);
     expect(body.value.length).toBeGreaterThan(0);
+    const streaming = body.value.find((p: any) => p.id === 'streaming');
+    expect(streaming).toBeDefined();
   });
 
   test('GET /adblock/rules/ad_domains.txt returns rule file', async () => {
@@ -66,6 +77,30 @@ describe('AdBlock Endpoints (Integration)', () => {
     expect(res.status).toBe(200);
     const text = await res.text();
     expect(text.length).toBeGreaterThan(0);
+  });
+
+  test('GET /adblock/rules/video_ads.txt returns rule file', async () => {
+    const res = await app.handle(new Request('http://localhost/adblock/rules/video_ads.txt'));
+    expect(res.status).toBe(200);
+    const text = await res.text();
+    expect(text.length).toBeGreaterThan(0);
+    expect(text).toContain('.video-ads');
+  });
+
+  test('GET /adblock/rules/anti_adblock_selectors.txt returns rule file', async () => {
+    const res = await app.handle(new Request('http://localhost/adblock/rules/anti_adblock_selectors.txt'));
+    expect(res.status).toBe(200);
+    const text = await res.text();
+    expect(text.length).toBeGreaterThan(0);
+    expect(text).toContain('.adblock-warning');
+  });
+
+  test('GET /adblock/rules/popup_ads.txt returns rule file', async () => {
+    const res = await app.handle(new Request('http://localhost/adblock/rules/popup_ads.txt'));
+    expect(res.status).toBe(200);
+    const text = await res.text();
+    expect(text.length).toBeGreaterThan(0);
+    expect(text).toContain('.popup-ad');
   });
 
   test('GET /adblock/rules/nonexistent.txt returns 404', async () => {
